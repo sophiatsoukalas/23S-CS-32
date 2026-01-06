@@ -1,0 +1,93 @@
+Sophia Tsoukalas
+UID 105981232
+
+
+*** I've spent hours trying to debug a SEGV error on the CS32 Linux servers. This error results, as far as I can tell, when calling concatReverse(a, a, a). I did not run into this error on Xcode, and my friend uses a Windows compiler and it worked fine on his. I honestly cannot figure out how to fix this in time, but all my other test cases should work as expected.
+
+
+-----------------------
+
+Design:
+
+My doubly-linked list is circularly linked with a dummy node attached to a head pointer. Each list node (that is, not the dummy node) contains a value of type ItemType, and two pointers to the next and previous nodes, respectively. The last node of a list has the head as its next pointer. Upon construction of a new Sequence, a head pointer is initialized to a new dummy node, with uninitialized value and reflexive pointers.
+
+-----------------------
+
+Algorithm Pseudocode:
+
+
+traverse:
+
+  stop if invalid position or sequence
+  start traverse at non-dummy node
+  repeatedly advance one node until position
+  return node
+
+
+subsequence:
+
+  stop if invalid sequence input
+  repeatedly:
+    compare corresponding seq1 and seq2 values
+    if match, proceed with iteration
+    if no match, start seq2 over and repeatedly:
+      search for corresponding seq1 value
+      if no matches in seq1, stop
+      if match, proceed with initial iteration
+  return starting position in seq1 if subsequence match
+  otherwise return -1
+
+
+concatReverse:
+
+  if seq1, seq2, or result are aliases: create new Sequence to replace result
+  empty result Sequence in use
+  add reversed seq1 to result, then repeat with seq2
+  if new Sequence was created, assign result to it and deallocate
+
+
+-----------------------
+
+Test Cases + Assertions:
+
+    Sequence a;
+    Sequence b;
+    Sequence c;
+    
+    assert(a.empty()); // tests empty function
+   
+    assert(b.insert(0, 32) == 0);
+    assert(b.insert(0, 8) == 0);
+    assert(b.insert(0, 29) == 0);
+    assert(b.insert(0, 17) == 0);
+    assert(b.insert(0, 63) == 0);
+    assert(b.insert(0, 17) == 0);
+    assert(b.insert(0, 42) == 0);
+    assert(b.insert(0, 63) == 0);
+    assert(b.insert(0, 21) == 0);
+    assert(b.insert(0, 30) == 0); // initializes b, shows valid insertion at given pos
+
+    assert(c.insert(0, 63) == 0);
+    assert(c.insert(1, 17) == 1);
+    assert(c.insert(2, 29) == 2); // ''
+
+    assert(subsequence(b, c) == 5); // tests for valid subsequence
+    concatReverse(b, c, a); // initializes a in terms of b and c
+    concatReverse(a, a, a); // shows valid output for overlapping addresses 
+    assert(a.remove(17) == 6); // removal of repeating values works
+    b.swap(c); // tests swap function and results in swapped sizes below
+    assert(b.size() == 3);
+    assert(c.size() == 10);
+    
+    assert(a.find(30) == 2); // tests find w/ valid input
+    assert(a.find(50) == -1); // tests find w/ invalid input
+    assert(a.insert(0, 50) == 0); // tests insert w/ valid input
+    assert(a.insert(22, 50) == -1); // tests insert w/ invalid input
+    assert(a.size() == 21); // shows only valid input allows for insertion
+    
+    assert(a.insert(100) == a.size()-1); // demos insertion by value
+    assert(a.erase(21)); // erases 100
+    assert(!a.erase(21)); // can't erase anything because the LL has shrunk
+    assert(a.erase(0)); // demos erasing at boundary
+    assert(a.size() == 20); // shows corresponding change in size
+    assert(a.set(0, 10)); // shows valid use of set func

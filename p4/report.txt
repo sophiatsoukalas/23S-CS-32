@@ -1,0 +1,36 @@
+Sophia Tsoukalas
+UID 105981232
+
+1. 
+
+As private members to DictionaryImpl, I added a vector of pointers to string lists (functioning as a hash table) and an integer representing the maximum amount of buckets in this table. In the DictionaryImpl constructor, I push back max_bucks empty string lists onto the dict vector. These function as empty buckets for insertion of new words. (Of course, the destructor accomplishes the opposite of deleting this memory allocation). Going along with this, I’ve used the STL hash function for optimal performance. In my private DictionaryImpl function h, I determine the proper bucket for a given word by calling the built-in hash and distributing over max_bucks buckets.
+
+When inserting a word into the dictionary, I use the insert function to determine the proper bucket by sorting the string and finding its hash index. That is to say, all words that have the same sorted string will fall into the same bucket. This allows for straightforward anagram lookup, as anagrams satisfy this requirement. 
+
+In my lookup function, I follow a similar procedure of cleaning the string and going to the bucket associated with its sorted counterpart. Then I iterate through the strings in the bucket: if the bucket item and string argument are equal in length and value, I execute the callback function on the bucket item (denoting it as an anagram). 
+
+
+
+2. Pseudocode:
+
+
+void DictionaryImpl::insert(string word) ------------------------------
+{
+  clean word to have only letters
+  if word isn't empty, put it in bucket associated with its sorted string
+}
+
+
+void DictionaryImpl::lookup(string letters, void callback(string)) const -----------------
+{
+  if callback function doesn't exist, return
+  clean letters and return if empty
+  for each string in letters' bucket {
+    if current string and letters are equal in length and value:
+      execute callback on current string
+  }
+}
+
+
+
+3. I've spent some time trying to figure out how to get my DictionaryImpl to go below 19-20ms on the provided performance test. I think it's likely there are more optimal ways for me to structure my data and access buckets, but this is the solution I've found to work best during the time of this project.
